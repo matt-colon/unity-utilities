@@ -35,75 +35,93 @@ namespace Omnipoof {
       }
 
       /// <summary>
+      /// Calculates the position vector based on the tile coordinates and tile width.  This
+      /// is under the expectation that the tilemap's top left corner is anchored at the
+      /// origin coordinates of the scene.
+      /// </summary>
+      /// <param name="tileCoordinates">
+      /// The tile coordinates in the tilemap.
+      /// </param>
+      /// <param name="tileWidth">
+      /// The width of the tiles in the tilemap in pixels.
+      /// </param>
+      /// <returns>
+      /// A vector representing the position of the tile coordinates in the 2D world space.
+      /// </returns>
+      public static Vector3 GetPositionVector(Vector3Int tileCoordinates, float tileWidth) {
+        return new Vector3((tileCoordinates.x * tileWidth) + (tileWidth / 2), (tileCoordinates.y * tileWidth) - (tileWidth / 2), 0);
+      }
+
+      /// <summary>
       /// Finds a path of tile coordinates between the given starting (exclusive) and
       /// destination (inclusive) tile coordinates.
       /// </summary>
       /// <param name="boundaryMap">
       /// A two-dimentional bool array created from <see cref="CreateBoundaryMap"/>.
       /// </param>
-      /// <param name="startingTileCoordinate">
-      /// The tile coordinate of where to start the pathfinding.
+      /// <param name="startingTileCoordinates">
+      /// The tile coordinates of where to start the pathfinding.
       /// </param>
-      /// <param name="destinationTileCoordinate">
-      /// The tile coordinate of where to end the pathfinding.
+      /// <param name="destinationTileCoordinates">
+      /// The tile coordinates of where to end the pathfinding.
       /// </param>
       /// <returns>
-      /// A list of tile coordinates representing the path to the destination tile coordinate.
+      /// A list of tile coordinates representing the path to the destination tile coordinates.
       /// </returns>
-      public static List<Vector3Int> GetTileCoordinatePath(bool[,] boundaryMap, Vector3Int startingTileCoordinate, Vector3Int destinationTileCoordinate) {
+      public static List<Vector3Int> GetTileCoordinatePath(bool[,] boundaryMap, Vector3Int startingTileCoordinates, Vector3Int destinationTileCoordinates) {
         // We have to negate the y value because SuperTiled2Unity uses negative y tile
         // coordinates but the y index in the boundary map needs to be positive
-        if (boundaryMap[destinationTileCoordinate.x, -destinationTileCoordinate.y] == false) {
+        if (boundaryMap[destinationTileCoordinates.x, -destinationTileCoordinates.y] == false) {
           return new List<Vector3Int>();
         }
 
         PathFind.Grid boundaryGrid = CreatePathFindGrid(boundaryMap);
-        PathFind.Point startingPoint = new PathFind.Point(startingTileCoordinate.x, startingTileCoordinate.y);
-        PathFind.Point destinationPoint = new PathFind.Point(destinationTileCoordinate.x, destinationTileCoordinate.y);
+        PathFind.Point startingPoint = new PathFind.Point(startingTileCoordinates.x, startingTileCoordinates.y);
+        PathFind.Point destinationPoint = new PathFind.Point(destinationTileCoordinates.x, destinationTileCoordinates.y);
         List<PathFind.Point> pathPoints = PathFind.Pathfinding.FindPath(boundaryGrid, startingPoint, destinationPoint);
         return ConvertToTileCoordinates(pathPoints);
       }
 
       /// <summary>
-      /// Finds the adjacent tile coordinate to the given tile coordinate that is the furthest
-      /// from the given reference tile coordinate.
+      /// Finds the adjacent tile coordinates to the given tile coordinates that is the furthest
+      /// from the given reference tile coordinates.
       /// </summary>
       /// <param name="boundaryMap">
       /// A two-dimentional bool array created from <see cref="CreateBoundaryMap"/>.
       /// </param>
-      /// <param name="tileCoordinate">
-      /// The tile coordinate by which adjacent tile coordinates will be checked.
+      /// <param name="tileCoordinates">
+      /// The tile coordinates by which adjacent tile coordinates will be checked.
       /// </param>
-      /// <param name="referenceTileCoordinate">
-      /// The tile coordinate from which the distance will be calculated to tile coordinates
-      /// adjacent to <see cref="tileCoordinate"/>.
+      /// <param name="referenceTileCoordinates">
+      /// The tile coordinates from which the distance will be calculated to tile coordinates
+      /// adjacent to <see cref="tileCoordinates"/>.
       /// </param>
       /// <returns>
-      /// The adjacent tile coordinate that is the furthest from the reference tile coordinate
+      /// The adjacent tile coordinates that is the furthest from the reference tile coordinate
       /// </returns>
-      public static Vector3Int? GetFurthestAdjacentTileCoordinate(bool[,] boundaryMap, Vector3Int tileCoordinate, Vector3Int referenceTileCoordinate) {
-        Vector3Int? furthestAdjacentTileCoordinate = null;
-        List<Vector3Int> candidateTileCoordinates = new List<Vector3Int>();
-        candidateTileCoordinates.Add(tileCoordinate + new Vector3Int(0, 1, 0)); // Up
-        candidateTileCoordinates.Add(tileCoordinate + new Vector3Int(1, 0, 0)); // Right
-        candidateTileCoordinates.Add(tileCoordinate + new Vector3Int(0, -1, 0)); // Down
-        candidateTileCoordinates.Add(tileCoordinate + new Vector3Int(-1, 0, 0)); // Left
+      public static Vector3Int? GetFurthestAdjacentTileCoordinate(bool[,] boundaryMap, Vector3Int tileCoordinates, Vector3Int referenceTileCoordinates) {
+        Vector3Int? furthestAdjacentTileCoordinates = null;
+        List<Vector3Int> adjacentCandidateTileCoordinates = new List<Vector3Int>();
+        adjacentCandidateTileCoordinates.Add(tileCoordinates + new Vector3Int(0, 1, 0)); // Up
+        adjacentCandidateTileCoordinates.Add(tileCoordinates + new Vector3Int(1, 0, 0)); // Right
+        adjacentCandidateTileCoordinates.Add(tileCoordinates + new Vector3Int(0, -1, 0)); // Down
+        adjacentCandidateTileCoordinates.Add(tileCoordinates + new Vector3Int(-1, 0, 0)); // Left
 
         float furthestDistance = -1;
         float candidateDistance;
 
-        foreach (Vector3Int candidateTileCoordinate in candidateTileCoordinates) {
-          candidateDistance = (candidateTileCoordinate - referenceTileCoordinate).magnitude;
+        foreach (Vector3Int candidateTileCoordinates in adjacentCandidateTileCoordinates) {
+          candidateDistance = (candidateTileCoordinates - referenceTileCoordinates).magnitude;
 
           // We have to negate the y value because SuperTiled2Unity uses negative y tile
           // coordinates but the y index in the boundary map needs to be positive
-          if (candidateDistance > furthestDistance && boundaryMap[candidateTileCoordinate.x, -candidateTileCoordinate.y]) {
-            furthestAdjacentTileCoordinate = candidateTileCoordinate;
+          if (candidateDistance > furthestDistance && boundaryMap[candidateTileCoordinates.x, -candidateTileCoordinates.y]) {
+            furthestAdjacentTileCoordinates = candidateTileCoordinates;
             furthestDistance = candidateDistance;
           }
         }
 
-        return furthestAdjacentTileCoordinate;
+        return furthestAdjacentTileCoordinates;
       }
 
       /// <summary>
