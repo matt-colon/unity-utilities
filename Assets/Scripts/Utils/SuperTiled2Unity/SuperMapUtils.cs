@@ -4,7 +4,7 @@ using UnityEngine.Tilemaps;
 
 namespace Omnipoof {
   namespace SuperTiled2Unity {
-    public class SuperMapUtils {
+    public static class SuperMapUtils {
       /// <summary>
       /// Creates a boolean representation of the given tilemap's boundaries.  This
       /// boundary map is used as a parameter for other <see cref="SuperMapUtils"/>
