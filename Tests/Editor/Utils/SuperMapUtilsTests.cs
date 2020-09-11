@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using Omnipoof.SuperTiled2Unity;
+using MCUU.SuperTiled2Unity;
 
 namespace Tests {
   public class SuperMapUtilsTests {

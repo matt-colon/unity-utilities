@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
-using Omnipoof.Events;
+using MCUU.Events;
 
 namespace Tests {
   public class EventListener : IEventListener {

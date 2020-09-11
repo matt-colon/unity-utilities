@@ -1,7 +1,7 @@
 using UnityEngine;
-using Omnipoof.SuperTiled2Unity;
+using MCUU.SuperTiled2Unity;
 
-namespace Omnipoof {
+namespace MCUU.Controllers {
   public abstract class CharacterTileMovementController : MonoBehaviour {
     /// <summary>
     /// The dimension of the sides of the tiles in the tilemap
