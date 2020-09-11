@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using NesScripts.Controls.PathFind;
 
 namespace MCUU.SuperTiled2Unity {
   public static class SuperMapUtils {
@@ -73,10 +74,10 @@ namespace MCUU.SuperTiled2Unity {
         return new List<Vector3Int>();
       }
 
-      PathFind.Grid boundaryGrid = CreatePathFindGrid(boundaryMap);
-      PathFind.Point startingPoint = new PathFind.Point(startingTileCoordinates.x, startingTileCoordinates.y);
-      PathFind.Point destinationPoint = new PathFind.Point(destinationTileCoordinates.x, destinationTileCoordinates.y);
-      List<PathFind.Point> pathPoints = PathFind.Pathfinding.FindPath(boundaryGrid, startingPoint, destinationPoint);
+      NesScripts.Controls.PathFind.Grid boundaryGrid = CreatePathFindGrid(boundaryMap);
+      Point startingPoint = new Point(startingTileCoordinates.x, startingTileCoordinates.y);
+      Point destinationPoint = new Point(destinationTileCoordinates.x, destinationTileCoordinates.y);
+      List<Point> pathPoints = Pathfinding.FindPath(boundaryGrid, startingPoint, destinationPoint, Pathfinding.DistanceType.Manhattan);
       return ConvertToTileCoordinates(pathPoints);
     }
 
@@ -131,8 +132,8 @@ namespace MCUU.SuperTiled2Unity {
     /// <returns>
     /// A grid that will be used for pathfinding.
     /// </returns>
-    private static PathFind.Grid CreatePathFindGrid(bool[,] boundaryMap) {
-      return new PathFind.Grid(boundaryMap.GetLength(0), boundaryMap.GetLength(1), boundaryMap);
+    private static NesScripts.Controls.PathFind.Grid CreatePathFindGrid(bool[,] boundaryMap) {
+      return new NesScripts.Controls.PathFind.Grid(boundaryMap);
     }
 
     /// <summary>
@@ -144,11 +145,11 @@ namespace MCUU.SuperTiled2Unity {
     /// <returns>
     /// A list of tile coordinates.
     /// </returns>
-    private static List<Vector3Int> ConvertToTileCoordinates(List<PathFind.Point> pathPoints) {
+    private static List<Vector3Int> ConvertToTileCoordinates(List<Point> pathPoints) {
       List<Vector3Int> tileCoordinates = new List<Vector3Int>();
       if (pathPoints.Count != 0) {
         for (int i = 0; i < pathPoints.Count; i++) {
-          PathFind.Point pathPoint = pathPoints[i];
+          Point pathPoint = pathPoints[i];
           tileCoordinates.Add(new Vector3Int(pathPoint.x, -pathPoint.y, 0));
         }
       }

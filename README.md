@@ -8,5 +8,5 @@ You can use the Unity package manager to get the package directly from GitHub.
 
 ## Credits
 
-- RonenNess's Unity-2d-pathfinding for the underlying pathfinding logic for the `SuperMapUtils`
-https://github.com/RonenNess/Unity-2d-pathfinding
+- RonenNess's `2dTileBasedPathFinding` for the underlying pathfinding logic for the `SuperMapUtils`
+https://github.com/RonenNess/UnityUtils/tree/master/Controls/PathFinding/2dTileBasedPathFinding
